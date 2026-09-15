@@ -1,7 +1,7 @@
 // Service worker de "CheckCalendar" — cachea la app para que instale y funcione offline.
 // Sube este archivo a la raíz del sitio (mismo nivel que index.html).
 
-const CACHE_NAME = 'checkcalendar-cache-v4';
+const CACHE_NAME = 'checkcalendar-cache-v5';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',
@@ -33,7 +33,7 @@ self.addEventListener('fetch', (event) => {
   const req = event.request;
   if (req.mode === 'navigate' || req.destination === 'document') {
     event.respondWith(
-      fetch(req)
+      fetch(req, {cache:'no-store'})
         .then((res) => {
           const resClone = res.clone();
           caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
