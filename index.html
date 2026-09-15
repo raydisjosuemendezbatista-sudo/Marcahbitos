@@ -2,14 +2,14 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-<title>Marca — seguimiento de hábitos</title>
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235B5FEF'/%3E%3Crect x='14' y='18' width='36' height='32' rx='6' fill='white' fill-opacity='.95'/%3E%3Crect x='14' y='18' width='36' height='9' rx='4' fill='%233F3FD8'/%3E%3Ccircle cx='23' cy='38' r='3.4' fill='%235B5FEF'/%3E%3Ccircle cx='32' cy='38' r='3.4' fill='%235B5FEF' fill-opacity='.35'/%3E%3Ccircle cx='41' cy='38' r='3.4' fill='%235B5FEF' fill-opacity='.35'/%3E%3C/svg%3E">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+<title>CheckCalendar — seguimiento de hábitos</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%235B5FEF'/%3E%3Crect x='14' y='18' width='36' height='32' rx='6' fill='white' fill-opacity='.95'/%3E%3Crect x='14' y='18' width='36' height='9' rx='4' fill='%233F3FD8'/%3E%3Cpath d='M21 39 L28 46 L43 30' stroke='%235B5FEF' stroke-width='5.5' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E">
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#5B5FEF">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<meta name="apple-mobile-web-app-title" content="Marca">
+<meta name="apple-mobile-web-app-title" content="CheckCalendar">
 <link rel="apple-touch-icon" href="icon-192.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -31,7 +31,8 @@
   *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
   html{-webkit-text-size-adjust:100%;}
   body{margin:0; background:var(--bg); color:var(--ink); font-family:'Inter',-apple-system,sans-serif;
-    -webkit-font-smoothing:antialiased; transition:background .3s ease, color .3s ease; min-height:100vh; padding-bottom:90px;}
+    -webkit-font-smoothing:antialiased; transition:background .3s ease, color .3s ease; min-height:100vh;
+    padding-bottom:calc(90px + env(safe-area-inset-bottom));}
   h1,h2,h3,.serif{font-family:'Manrope',sans-serif; font-weight:800; letter-spacing:-.01em;}
   button{font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent;}
   button:active{transform:scale(.97);}
@@ -40,8 +41,11 @@
   /* header */
   .app-header{display:flex; align-items:flex-start; justify-content:space-between; margin-bottom:18px;}
   .app-header .brand{display:flex; align-items:center; gap:10px;}
-  .brand-mark{width:38px; height:38px; border-radius:12px; background:var(--accent); display:flex; align-items:center;
+  .brand-mark{position:relative; width:38px; height:38px; border-radius:12px; background:var(--accent); display:flex; align-items:center;
     justify-content:center; font-size:18px; box-shadow:var(--shadow-lift); flex-shrink:0;}
+  .brand-check{position:absolute; bottom:-3px; right:-3px; width:16px; height:16px; border-radius:50%; background:#2FBF71;
+    color:#fff; font-size:10px; font-weight:900; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 0 0 2px var(--bg);}
   .app-header h1{font-size:19px; margin:0; line-height:1.15;}
   .app-header .greet{font-size:12px; color:var(--muted); font-weight:500; margin-top:1px;}
   .theme-btn{background:var(--card); border:1px solid var(--border); border-radius:var(--radius-pill); width:40px; height:40px;
@@ -80,12 +84,12 @@
     cursor:pointer; user-select:none; transition:transform .12s ease, border-color .15s ease;}
   .day-cell:active{transform:scale(.9);}
   .day-cell.empty{visibility:hidden; pointer-events:none;}
-  .day-cell.today{border-color:var(--accent); color:var(--accent-ink); font-weight:800;}
+  .day-cell.today{border-color:var(--accent); color:var(--accent-ink); font-weight:800; box-shadow:0 0 0 1px var(--accent);}
   .day-cell.today.checked{color:#fff;}
   .day-cell.future{opacity:.32; pointer-events:none;}
   .day-cell .num{position:relative; z-index:2;}
   .day-cell.checked .num{color:#fff; font-weight:700;}
-  .day-cell .fill{position:absolute; inset:0; border-radius:12px; opacity:1; box-shadow:0 4px 10px -3px rgba(20,22,31,0.35);
+  .day-cell .fill{position:absolute; inset:0; border-radius:14px; opacity:1; box-shadow:0 4px 10px -3px rgba(20,22,31,0.35);
     animation:checkPop .28s cubic-bezier(.34,1.56,.64,1);}
   .day-cell .note-dot{position:absolute; bottom:4px; right:4px; width:5px; height:5px; border-radius:50%; background:var(--danger); z-index:3; box-shadow:0 0 0 1.5px var(--card);}
   .day-cell .check-badge{position:absolute; bottom:2px; left:3px; font-size:9px; font-weight:900; color:#fff; z-index:3; line-height:1; text-shadow:0 1px 1px rgba(0,0,0,0.25);}
@@ -99,7 +103,7 @@
   .stat .lbl{font-size:10.5px; color:var(--muted); font-weight:600; margin-top:2px; display:block;}
 
   /* bottom nav */
-  .tabbar{position:fixed; bottom:14px; left:16px; right:16px; max-width:428px; margin:0 auto; background:var(--card);
+  .tabbar{position:fixed; bottom:calc(14px + env(safe-area-inset-bottom)); left:16px; right:16px; max-width:428px; margin:0 auto; background:var(--card);
     border:1px solid var(--border); border-radius:var(--radius-pill); display:flex; justify-content:space-around;
     padding:7px; box-shadow:var(--shadow-lift); backdrop-filter:blur(10px);}
   .tab-btn{background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:2px;
@@ -183,11 +187,11 @@
     transition:opacity .25s ease, transform .25s ease; z-index:60; box-shadow:var(--shadow-lift);}
   .toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 
-  /* reminder banner */
-  .reminder-banner{display:flex; align-items:center; gap:10px; background:var(--accent-soft); border:1px solid transparent;
-    color:var(--accent-ink); border-radius:var(--radius-m); padding:12px 14px; margin-bottom:14px; font-size:12.5px; font-weight:600;}
-  .reminder-banner .rb-ico{font-size:16px; flex-shrink:0;}
-  .reminder-banner .rb-close{margin-left:auto; background:none; border:none; color:var(--accent-ink); font-size:14px; opacity:.7; flex-shrink:0;}
+  /* reminder banner — pequeño y limpio, sin botón flotante */
+  .reminder-banner{display:flex; align-items:center; gap:7px; color:var(--accent-ink);
+    padding:0 2px 10px; margin-bottom:2px; font-size:11.5px; font-weight:600; line-height:1.3;}
+  .reminder-banner .rb-ico{font-size:12px; flex-shrink:0;}
+  .reminder-banner .rb-text{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
 
   /* search box */
   .search-box{position:relative; margin-bottom:12px;}
@@ -236,10 +240,37 @@
   /* illustrated empty state */
   .empty-illustration{text-align:center; padding:26px 10px 30px;}
   .empty-illustration svg{width:84px; height:84px; margin-bottom:10px;}
-  .empty-illustration .et{color:var(--muted); font-size:13.5px; font-weight:500;}
+  .empty-illustration .et{color:var(--ink); font-size:13.5px; font-weight:700;}
+  .empty-illustration .et2{color:var(--muted); font-size:12px; font-weight:500; margin-top:4px; max-width:260px; margin-left:auto; margin-right:auto; line-height:1.4;}
 
   /* import */
   .import-row{display:flex; gap:8px; margin-top:8px;}
+
+  /* habit header (above calendar) */
+  .habit-header{display:flex; align-items:center; gap:13px; padding:14px 16px; border-radius:var(--radius-l);
+    margin-bottom:14px; background:var(--card); border:1px solid var(--border); box-shadow:var(--shadow-sm); transition:background .2s ease;}
+  .habit-header .hh-emoji{width:46px; height:46px; border-radius:15px; display:flex; align-items:center; justify-content:center;
+    font-size:22px; flex-shrink:0; box-shadow:var(--shadow-sm);}
+  .habit-header .hh-name{font-family:'Manrope',sans-serif; font-weight:800; font-size:15.5px; letter-spacing:-.01em;}
+  .habit-header .hh-streak{font-size:12.5px; color:var(--muted); font-weight:600; margin-top:2px; display:flex; align-items:center; gap:4px;}
+  .habit-header .hh-streak b{color:var(--ink); font-family:'Manrope',sans-serif; font-weight:800;}
+
+  /* today progress bar */
+  .progress-track{width:100%; height:10px; border-radius:var(--radius-pill); background:var(--card-2); border:1px solid var(--border);
+    overflow:hidden; margin-top:4px;}
+  .progress-fill{height:100%; border-radius:var(--radius-pill); background:var(--accent); transition:width .4s cubic-bezier(.2,.85,.25,1);}
+  .today-progress-row{display:flex; align-items:center; justify-content:space-between; margin-bottom:6px;}
+  .today-progress-row .tp-count{font-size:12.5px; color:var(--muted); font-weight:700;}
+  .today-progress-row .tp-pct{font-family:'Manrope',sans-serif; font-weight:800; font-size:14px;}
+  .today-quick-row{display:flex; gap:10px; margin-top:14px;}
+  .today-quick-row .btn-secondary{font-size:13px; padding:11px;}
+
+  /* milestone celebration */
+  .milestone-toast{position:fixed; top:18px; left:50%; transform:translateX(-50%) translateY(-14px); background:var(--card);
+    border:1px solid var(--border); color:var(--ink); padding:12px 20px; border-radius:var(--radius-pill); font-size:13.5px;
+    font-weight:700; opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s cubic-bezier(.2,.9,.25,1);
+    z-index:70; box-shadow:var(--shadow-lift); display:flex; align-items:center; gap:8px;}
+  .milestone-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
 </style>
 </head>
 <body data-theme="light">
@@ -247,9 +278,9 @@
 
   <div class="app-header">
     <div class="brand">
-      <div class="brand-mark">📅</div>
+      <div class="brand-mark">📅<span class="brand-check">✓</span></div>
       <div>
-        <h1>Marca</h1>
+        <h1>CheckCalendar</h1>
         <div class="greet" id="greetLine">Hola 👋</div>
       </div>
     </div>
@@ -260,7 +291,15 @@
   <div class="view" id="view-today">
     <h2 class="section-title" style="font-size:20px;">Hoy</h2>
     <div class="card" id="todayCard">
-      <div id="todayList"></div>
+      <div class="today-progress-row">
+        <span class="tp-count" id="tpCount">0/0 completados</span>
+        <span class="tp-pct" id="tpPct">0%</span>
+      </div>
+      <div class="progress-track"><div class="progress-fill" id="tpFill" style="width:0%"></div></div>
+      <div id="todayList" style="margin-top:14px;"></div>
+      <div class="today-quick-row">
+        <button class="btn-secondary" id="todayCalendarBtn">📅 Ver calendario</button>
+      </div>
     </div>
   </div>
 
@@ -268,6 +307,14 @@
   <div class="view active" id="view-calendar">
     <div id="reminderBanner" style="display:none;"></div>
     <div class="pills" id="pillsRow"></div>
+
+    <div class="habit-header" id="habitHeader">
+      <div class="hh-emoji" id="hhEmoji">🔥</div>
+      <div>
+        <div class="hh-name" id="hhName">—</div>
+        <div class="hh-streak" id="hhStreak">Racha actual: <b>0</b> días</div>
+      </div>
+    </div>
 
     <div class="card" id="calendarCard">
       <div class="month-nav">
@@ -279,13 +326,12 @@
         </div>
       </div>
       <div class="weekday-row">
-        <span>D</span><span>L</span><span>M</span><span>M</span><span>J</span><span>V</span><span>S</span>
+        <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
       </div>
       <div class="day-grid" id="dayGrid"></div>
       <div class="cal-hint">Toca para marcar · mantén pulsado para nota o varias veces</div>
 
       <div class="stats-row">
-        <div class="stat"><span class="ico">🔥</span><span class="num" id="statStreak">0</span><span class="lbl">racha actual</span></div>
         <div class="stat"><span class="ico">📈</span><span class="num" id="statMonth">0%</span><span class="lbl">este mes</span></div>
         <div class="stat"><span class="ico">🎯</span><span class="num" id="statWeek">0/0</span><span class="lbl">meta semanal</span></div>
       </div>
@@ -303,10 +349,22 @@
 
   <!-- ===== REPORTS VIEW ===== -->
   <div class="view" id="view-reports">
-    <h2 class="section-title" style="font-size:20px;">Informes</h2>
+    <h2 class="section-title" style="font-size:20px;">Progreso</h2>
+    <div class="card" id="progressHero">
+      <div style="font-size:12px;color:var(--muted);font-weight:600;">Este mes</div>
+      <div style="display:flex; align-items:baseline; gap:9px; margin-top:4px;">
+        <span style="font-family:'Manrope',sans-serif; font-weight:800; font-size:36px; letter-spacing:-.02em;" id="progHeroPct">0%</span>
+        <span style="font-size:12px; color:var(--muted); font-weight:700; letter-spacing:.02em;">COMPLETADO</span>
+      </div>
+      <div style="font-size:13px; color:var(--muted); font-weight:600; margin-top:2px;" id="progHeroDays">0 / 0 días</div>
+      <div class="stats-row" style="margin-top:16px;">
+        <div class="stat"><span class="ico">🔥</span><span class="num" id="progHeroStreak">0</span><span class="lbl">racha actual</span></div>
+        <div class="stat"><span class="ico">🏆</span><span class="num" id="progHeroBest">0</span><span class="lbl">mejor racha</span></div>
+      </div>
+    </div>
     <div class="card">
       <div id="reportHabitLabel" style="font-size:13px; color:var(--muted); margin-bottom:10px;"></div>
-      <div class="chart-toggle">
+      <div class="chart-toggle" id="chartToggleRow">
         <button data-chart="bars" class="active">Barras</button>
         <button data-chart="heatmap">Mapa de calor</button>
       </div>
@@ -320,9 +378,16 @@
         <div class="heatmap-months" id="heatmapMonths"></div>
         <div class="heatmap-grid" id="heatmapGrid"></div>
       </div>
-      <div class="best-streak-row">
-        <span>Racha actual: <b id="repCurrentStreak">0</b></span>
-        <span>Mejor racha histórica: <b id="repBestStreak">0</b></span>
+      <div class="empty-illustration" id="chartEmptyState" style="display:none;">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="16" y="54" width="14" height="28" rx="4" fill="var(--border)"/>
+          <rect x="36" y="40" width="14" height="42" rx="4" fill="var(--accent-soft)"/>
+          <rect x="56" y="24" width="14" height="58" rx="4" fill="var(--border)"/>
+          <path d="M18 20 h48 a6 6 0 0 1 6 6 v6 h-60 v-6 a6 6 0 0 1 6 -6 z" fill="var(--card-2)" stroke="var(--border)" stroke-width="2"/>
+          <path d="M30 16 v10 M70 16 v10" stroke="var(--muted)" stroke-width="3" stroke-linecap="round"/>
+        </svg>
+        <div class="et">Aún no hay registros</div>
+        <div class="et2">Marca tus días en el calendario y aquí aparecerá tu progreso.</div>
       </div>
     </div>
     <div class="card">
@@ -368,7 +433,7 @@
 <div class="tabbar">
   <button class="tab-btn" data-view="today"><span class="ico">✅</span>Hoy</button>
   <button class="tab-btn active" data-view="calendar"><span class="ico">📅</span>Calendario</button>
-  <button class="tab-btn" data-view="reports"><span class="ico">📊</span>Informes</button>
+  <button class="tab-btn" data-view="reports"><span class="ico">📊</span>Progreso</button>
   <button class="tab-btn" data-view="manage"><span class="ico">🗂️</span>Hábitos</button>
 </div>
 
@@ -442,6 +507,7 @@
 </div>
 
 <div class="toast" id="toast"></div>
+<div class="milestone-toast" id="milestoneToast"></div>
 
 <script>
 (function(){
@@ -500,7 +566,8 @@
   </svg>`;
 
   // ---------- storage (localStorage: solo en este dispositivo/navegador) ----------
-  const LS_PREFIX = 'marca:'; // namespace para no chocar con otras apps del mismo dominio
+  // El prefijo interno se mantiene igual (no es visible al usuario) para no perder los datos ya guardados.
+  const LS_PREFIX = 'marca:'; // namespace interno de almacenamiento — NO cambiar sin migración
 
   async function loadAll(){
     try{
@@ -580,8 +647,19 @@
     const list = $('todayList');
     if(active.length===0){
       list.innerHTML = `<div class="empty-illustration">${EMPTY_HABITS_SVG}<div class="et">Aún no has creado hábitos.</div></div>`;
+      $('tpCount').textContent = '0/0 completados';
+      $('tpPct').textContent = '0%';
+      $('tpFill').style.width = '0%';
       return;
     }
+    const doneToday = active.filter(h=>{
+      const e = (checksCache[h.id]||{})[todayStr];
+      return e && e.count > 0;
+    }).length;
+    const pct = Math.round((doneToday/active.length)*100);
+    $('tpCount').textContent = `${doneToday} / ${active.length} completados`;
+    $('tpPct').textContent = pct + '%';
+    $('tpFill').style.width = pct + '%';
     list.innerHTML = active.map(h=>{
       const checks = checksCache[h.id] || {};
       const entry = checks[todayStr];
@@ -598,7 +676,11 @@
         const entry = checksCache[h.id][todayStr];
         const isDone = entry && entry.count > 0;
         if(isDone){ delete checksCache[h.id][todayStr]; }
-        else { checksCache[h.id][todayStr] = {count:1, note:(entry&&entry.note)||''}; vibrate(12); }
+        else {
+          checksCache[h.id][todayStr] = {count:1, note:(entry&&entry.note)||''}; vibrate(12);
+          const streaks = computeStreaks(checksCache[h.id]);
+          celebrateMilestoneIfReached(h, streaks.current);
+        }
         await saveChecksFor(h.id);
         renderToday();
         if(h.id===selectedHabitId){ renderCalendar(); renderHistory(); }
@@ -606,6 +688,10 @@
       });
     });
   }
+
+  $('todayCalendarBtn').addEventListener('click', ()=>{
+    document.querySelector('.tab-btn[data-view="calendar"]').click();
+  });
 
   // ---------- reminder banner ----------
   let reminderDismissed = false;
@@ -622,8 +708,7 @@
     const names = pending.slice(0,3).map(h=>(h.emoji?h.emoji+' ':'')+escapeHtml(h.name)).join(', ');
     const extra = pending.length>3 ? ` y ${pending.length-3} más` : '';
     banner.style.display = 'flex';
-    banner.innerHTML = `<span class="rb-ico">⏰</span><span>Hoy te falta: ${names}${extra}</span><button class="rb-close" id="rbCloseBtn">✕</button>`;
-    $('rbCloseBtn').addEventListener('click', ()=>{ reminderDismissed = true; banner.style.display='none'; });
+    banner.innerHTML = `<span class="rb-ico">⏰</span><span class="rb-text">Falta: ${names}${extra}</span>`;
   }
 
   // ---------- pills ----------
@@ -658,7 +743,7 @@
     $('monthLabel').textContent = `${MONTH_NAMES[viewMonth.getMonth()]} ${viewMonth.getFullYear()}`;
     const grid = $('dayGrid'); grid.innerHTML = '';
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
-    const firstDay = new Date(y,m,1).getDay();
+    const firstDay = (new Date(y,m,1).getDay() + 6) % 7; // Monday-first offset
     const daysInMonth = new Date(y,m+1,0).getDate();
     const checks = checksCache[habit.id] || {};
 
@@ -698,6 +783,30 @@
     renderReminder();
   }
 
+  function renderHabitHeader(habit, streak){
+    $('hhEmoji').textContent = habitIcon(habit);
+    $('hhEmoji').style.background = habit.color + '26';
+    $('hhName').textContent = habit.name;
+    $('hhStreak').innerHTML = streak > 0
+      ? `🔥 Racha actual: <b>${streak}</b> ${streak===1?'día':'días'}`
+      : 'Aún sin racha activa';
+  }
+
+  const MILESTONES = [7,14,30,60,100];
+  function celebrateMilestoneIfReached(habit, streak){
+    if(!MILESTONES.includes(streak)) return;
+    const key = LS_PREFIX + 'milestone:' + habit.id + ':' + streak;
+    try{
+      if(localStorage.getItem(key)) return; // already celebrated this milestone for this habit
+      localStorage.setItem(key, '1');
+    }catch(e){}
+    const el = $('milestoneToast');
+    el.innerHTML = `<span>🎉</span><span>${escapeHtml(habit.name)} · ${streak} días de racha</span>`;
+    el.classList.add('show');
+    vibrate([10,40,10]);
+    setTimeout(()=>el.classList.remove('show'), 2600);
+  }
+
   function renderStats(habit){
     const checks = checksCache[habit.id] || {};
     // streak: consecutive days up to today with count>0
@@ -708,7 +817,7 @@
       if(checks[ds] && checks[ds].count > 0){ streak++; cursor.setDate(cursor.getDate()-1); }
       else break;
     }
-    $('statStreak').textContent = streak;
+    renderHabitHeader(habit, streak);
 
     // this month %
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
@@ -801,6 +910,10 @@
     } else {
       checksCache[habit.id][ds] = {count:1, note:(entry&&entry.note)||''};
       vibrate(12);
+      if(ds === todayStr){
+        const streaks = computeStreaks(checksCache[habit.id]);
+        celebrateMilestoneIfReached(habit, streaks.current);
+      }
     }
     await saveChecksFor(habit.id);
     renderCalendar(); renderHistory();
@@ -1019,9 +1132,15 @@
     if(!habit){ $('reportHabitLabel').textContent = 'Sin hábitos aún.'; $('barsChart').innerHTML=''; $('heatmapGrid').innerHTML=''; return; }
     $('reportHabitLabel').innerHTML = `${habitIcon(habit)} <strong>${escapeHtml(habit.name)}</strong>`;
     const checks = checksCache[habit.id] || {};
+    const hasAnyData = Object.values(checks).some(e=>e && e.count>0);
     const bars = $('barsChart'); bars.innerHTML = '';
+    $('chartEmptyState').style.display = hasAnyData ? 'none' : 'block';
+    $('barsChart').style.display = (hasAnyData && currentChartMode==='bars') ? 'flex' : 'none';
+    $('heatmapWrap').style.display = (hasAnyData && currentChartMode==='heatmap') ? 'block' : 'none';
+    $('chartToggleRow').style.display = hasAnyData ? 'flex' : 'none';
+    $('rangeToggle').style.display = (hasAnyData && currentChartMode==='bars') ? 'flex' : 'none';
 
-    if(currentChartMode === 'bars'){
+    if(hasAnyData && currentChartMode === 'bars'){
       const s = getSeries(habit, currentRange);
       s.vals.forEach((val,i)=>{
         const col = document.createElement('div'); col.className='bar-col';
@@ -1035,13 +1154,26 @@
         }
         bars.appendChild(col);
       });
-    } else {
+    } else if(hasAnyData){
       renderHeatmap(habit);
     }
 
     const streaks = computeStreaks(checks);
-    $('repCurrentStreak').textContent = streaks.current + ' días';
-    $('repBestStreak').textContent = streaks.best + ' días';
+    $('progHeroStreak').textContent = streaks.current;
+    $('progHeroBest').textContent = streaks.best;
+
+    const now = new Date();
+    const y = now.getFullYear(), m = now.getMonth();
+    const daysInMonth = new Date(y,m+1,0).getDate();
+    const lastDay = now.getDate();
+    let doneCount = 0;
+    for(let d=1; d<=lastDay; d++){
+      const ds = dstr(new Date(y,m,d));
+      if(checks[ds] && checks[ds].count>0) doneCount++;
+    }
+    const pct = lastDay ? Math.round((doneCount/lastDay)*100) : 0;
+    $('progHeroPct').textContent = pct + '%';
+    $('progHeroDays').textContent = `${doneCount} / ${daysInMonth} días`;
 
     populateCompareSelects();
     renderCompare();
@@ -1252,7 +1384,7 @@
     const blob = new Blob([csv], {type:'text/csv'});
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
-    a.href = url; a.download = 'marca-habitos.csv';
+    a.href = url; a.download = 'checkcalendar-habitos.csv';
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     URL.revokeObjectURL(url);
     toast('CSV exportado');

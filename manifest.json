@@ -1,9 +1,8 @@
 {
-  "name": "CheckCalendar — seguimiento de hábitos",
+  "name": "CheckCalendar",
   "short_name": "CheckCalendar",
-  "description": "Registra y sigue tus hábitos diarios, todo guardado en tu propio dispositivo.",
+  "description": "Marca tus días, mira tu calendario, mantén tu racha.",
   "start_url": "./index.html",
-  "scope": "./",
   "display": "standalone",
   "background_color": "#F4F5FA",
   "theme_color": "#5B5FEF",
@@ -13,25 +12,13 @@
       "src": "icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
       "src": "icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "icon-192.png",
-      "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "maskable"
-    },
-    {
-      "src": "icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ]
 }
