@@ -1,9 +1,9 @@
-// Service worker de "Marca" — cachea la app para que instale y funcione offline.
-// Sube este archivo a la raíz del sitio (mismo nivel que habit-tracker-5.html).
+// Service worker de "CheckCalendar" — cachea la app para que instale y funcione offline.
+// Sube este archivo a la raíz del sitio (mismo nivel que index.html).
 
-const CACHE_NAME = 'marca-cache-v1';
+const CACHE_NAME = 'checkcalendar-cache-v2';
 const ASSETS_TO_CACHE = [
-  './habit-tracker-5.html',
+  './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png'
@@ -39,7 +39,7 @@ self.addEventListener('fetch', (event) => {
           caches.open(CACHE_NAME).then((cache) => cache.put(req, resClone));
           return res;
         })
-        .catch(() => caches.match(req).then((res) => res || caches.match('./habit-tracker-5.html')))
+        .catch(() => caches.match(req).then((res) => res || caches.match('./index.html')))
     );
     return;
   }
