@@ -1,7 +1,7 @@
 // Service worker de "CheckCalendar" — cachea la app para que instale y funcione offline.
 // Sube este archivo a la raíz del sitio (mismo nivel que index.html).
 
-const CACHE_NAME = 'checkcalendar-cache-v2';
+const CACHE_NAME = 'checkcalendar-cache-v4';
 const ASSETS_TO_CACHE = [
   './index.html',
   './manifest.json',

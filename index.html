@@ -110,7 +110,7 @@
     color:var(--muted); font-size:10.5px; font-weight:700; padding:8px 14px; border-radius:var(--radius-pill);
     transition:background .2s ease, color .2s ease; flex:1;}
   .tab-btn.active{color:var(--accent-ink); background:var(--accent-soft);}
-  .tab-btn .ico{font-size:19px;}
+  .tab-btn .ico{font-size:19px; position:relative;}
 
   .view{display:none;}
   .view.active{display:block; animation:viewIn .3s cubic-bezier(.2,.85,.25,1);}
@@ -271,6 +271,35 @@
     font-weight:700; opacity:0; pointer-events:none; transition:opacity .3s ease, transform .3s cubic-bezier(.2,.9,.25,1);
     z-index:70; box-shadow:var(--shadow-lift); display:flex; align-items:center; gap:8px;}
   .milestone-toast.show{opacity:1; transform:translateX(-50%) translateY(0);}
+
+  /* settings */
+  .settings-card{padding:6px 18px;}
+  .settings-row{display:flex; align-items:center; justify-content:space-between; gap:12px; padding:14px 0; border-bottom:1px solid var(--border);}
+  .settings-row:last-child{border-bottom:none;}
+  .settings-row.plain{font-size:13.5px; color:var(--muted); font-weight:600;}
+  .settings-row.plain .settings-value{color:var(--ink); font-weight:700;}
+  .settings-label{display:flex; align-items:center; gap:12px; min-width:0;}
+  .settings-label b{font-size:14.5px; font-weight:700; display:block;}
+  .settings-sub{font-size:11.5px; color:var(--muted); font-weight:500; margin-top:1px;}
+  .settings-ico{font-size:18px; flex-shrink:0; width:22px; text-align:center;}
+  .settings-select{border:1px solid var(--border); background:var(--card-2); color:var(--ink); border-radius:var(--radius-pill);
+    padding:7px 12px; font-size:13px; font-weight:600; font-family:inherit;}
+  .settings-link-btn{width:100%; background:none; border:none; text-align:left; padding:12px 0; font-size:14.5px; font-weight:700;
+    color:var(--ink); display:flex; align-items:center; gap:12px;}
+  .settings-link-btn.danger{color:var(--danger);}
+  .switch{position:relative; display:inline-block; width:44px; height:26px; flex-shrink:0;}
+  .switch input{opacity:0; width:0; height:0;}
+  .switch-track{position:absolute; inset:0; background:var(--border); border-radius:var(--radius-pill); transition:background .18s ease;}
+  .switch-track::before{content:''; position:absolute; width:20px; height:20px; left:3px; top:3px; background:#fff; border-radius:50%;
+    box-shadow:0 1px 3px rgba(0,0,0,0.25); transition:transform .18s ease;}
+  .switch input:checked + .switch-track{background:var(--accent);}
+  .switch input:checked + .switch-track::before{transform:translateX(18px);}
+  .color-dots{display:flex; gap:8px;}
+  .color-dot{width:26px; height:26px; border-radius:50%; border:2px solid transparent; box-shadow:var(--shadow-sm); position:relative;}
+  .color-dot.active{border-color:var(--ink);}
+  .color-dot.active::after{content:'✓'; position:absolute; inset:0; display:flex; align-items:center; justify-content:center; color:#fff; font-size:12px; font-weight:900;}
+  .tab-badge{position:absolute; top:-4px; right:-8px; min-width:16px; height:16px; padding:0 4px; border-radius:999px;
+    background:var(--danger); color:#fff; font-size:10px; font-weight:800; display:flex; align-items:center; justify-content:center; line-height:1;}
 </style>
 </head>
 <body data-theme="light">
@@ -325,7 +354,7 @@
           <button id="nextMonth">›</button>
         </div>
       </div>
-      <div class="weekday-row">
+      <div class="weekday-row" id="weekdayRow">
         <span>L</span><span>M</span><span>X</span><span>J</span><span>V</span><span>S</span><span>D</span>
       </div>
       <div class="day-grid" id="dayGrid"></div>
@@ -428,6 +457,57 @@
     </div>
   </div>
 
+  <!-- ===== SETTINGS VIEW ===== -->
+  <div class="view" id="view-settings">
+    <h2 class="section-title" style="font-size:20px;">Ajustes</h2>
+
+    <div class="card settings-card">
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">🎨</span><div><b>Tema</b><div class="settings-sub">Claro, oscuro o automático</div></div></div>
+        <select id="setTheme" class="settings-select">
+          <option value="light">Claro</option>
+          <option value="dark">Oscuro</option>
+          <option value="auto">Automático</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">🖌️</span><div><b>Color de la marca</b><div class="settings-sub">Color de acento de la app</div></div></div>
+        <div class="color-dots" id="colorDots"></div>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">📆</span><div><b>Inicio de la semana</b><div class="settings-sub">Primer día del calendario</div></div></div>
+        <select id="setWeekStart" class="settings-select">
+          <option value="monday">Lunes</option>
+          <option value="sunday">Domingo</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="card settings-card">
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">❗</span><div><b>Confirmación al marcar</b><div class="settings-sub">Pide confirmar antes de marcar un día</div></div></div>
+        <label class="switch"><input type="checkbox" id="setConfirmCheck"><span class="switch-track"></span></label>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">📳</span><div><b>Vibración al marcar</b><div class="settings-sub">Vibra al marcar o desmarcar</div></div></div>
+        <label class="switch"><input type="checkbox" id="setVibrate" checked><span class="switch-track"></span></label>
+      </div>
+      <div class="settings-row">
+        <div class="settings-label"><span class="settings-ico">🔢</span><div><b>Mostrar racha en pestañas</b><div class="settings-sub">Insignia con hábitos pendientes hoy</div></div></div>
+        <label class="switch"><input type="checkbox" id="setTabBadge" checked><span class="switch-track"></span></label>
+      </div>
+    </div>
+
+    <div class="card settings-card">
+      <button class="settings-link-btn danger" id="resetDataBtn"><span class="settings-ico">🗑️</span> Inicializar datos</button>
+    </div>
+
+    <div class="card settings-card">
+      <div class="settings-row plain"><span>Versión</span><span class="settings-value">1.2.0</span></div>
+      <div class="settings-row plain"><span>Almacenamiento</span><span class="settings-value">Solo en este dispositivo</span></div>
+    </div>
+  </div>
+
 </div>
 
 <div class="tabbar">
@@ -435,6 +515,7 @@
   <button class="tab-btn active" data-view="calendar"><span class="ico">📅</span>Calendario</button>
   <button class="tab-btn" data-view="reports"><span class="ico">📊</span>Progreso</button>
   <button class="tab-btn" data-view="manage"><span class="ico">🗂️</span>Hábitos</button>
+  <button class="tab-btn" data-view="settings"><span class="ico">⚙️</span>Ajustes</button>
 </div>
 
 <!-- Day detail modal -->
@@ -523,6 +604,13 @@
   let modalCount = 0;
   let currentRange = 7;
   let darkMode = false;
+  let themePref = 'light'; // 'light' | 'dark' | 'auto'
+  let accentColor = '#5B5FEF';
+  let weekStart = 'monday'; // 'monday' | 'sunday'
+  let confirmOnCheck = false;
+  let vibrateOnCheck = true;
+  let showTabBadge = true;
+  const ACCENT_COLORS = ['#5B5FEF','#EF6461','#4A9D6E','#D98E2B','#3D8C99','#8C4A9D'];
 
   const $ = id => document.getElementById(id);
   const pad = n => String(n).padStart(2,'0');
@@ -535,6 +623,7 @@
   }
 
   function vibrate(ms){
+    if(!vibrateOnCheck) return;
     try{ if(navigator.vibrate) navigator.vibrate(ms); }catch(e){}
   }
 
@@ -579,6 +668,12 @@
       const s = raw ? JSON.parse(raw) : {};
       darkMode = !!s.darkMode;
       selectedHabitId = s.selectedHabitId || null;
+      themePref = s.themePref || (darkMode ? 'dark' : 'light');
+      accentColor = s.accentColor || '#5B5FEF';
+      weekStart = s.weekStart || 'monday';
+      confirmOnCheck = !!s.confirmOnCheck;
+      vibrateOnCheck = s.vibrateOnCheck !== false;
+      showTabBadge = s.showTabBadge !== false;
     }catch(e){}
     if(habits.length === 0){
       habits = [
@@ -609,13 +704,100 @@
     try{ localStorage.setItem(LS_PREFIX+'checks:'+habitId, JSON.stringify(checksCache[habitId]||{})); }catch(e){ toast('Error al guardar'); }
   }
   async function saveSettings(){
-    try{ localStorage.setItem(LS_PREFIX+'settings', JSON.stringify({darkMode, selectedHabitId})); }catch(e){}
+    try{ localStorage.setItem(LS_PREFIX+'settings', JSON.stringify({
+      darkMode, selectedHabitId, themePref, accentColor, weekStart, confirmOnCheck, vibrateOnCheck, showTabBadge
+    })); }catch(e){}
+  }
+
+  function updateWeekdayLabels(){
+    const row = $('weekdayRow');
+    if(!row) return;
+    const labels = weekStart === 'monday' ? ['L','M','X','J','V','S','D'] : ['D','L','M','X','J','V','S'];
+    row.innerHTML = labels.map(l=>`<span>${l}</span>`).join('');
+  }
+
+  // ---------- settings view ----------
+  let settingsWired = false;
+  function renderSettings(){
+    $('setTheme').value = themePref;
+    $('setWeekStart').value = weekStart;
+    $('setConfirmCheck').checked = confirmOnCheck;
+    $('setVibrate').checked = vibrateOnCheck;
+    $('setTabBadge').checked = showTabBadge;
+    const dots = $('colorDots');
+    dots.innerHTML = ACCENT_COLORS.map(c=>
+      `<button class="color-dot${c.toLowerCase()===accentColor.toLowerCase()?' active':''}" data-color="${c}" style="background:${c};"></button>`
+    ).join('');
+    dots.querySelectorAll('.color-dot').forEach(btn=>{
+      btn.addEventListener('click', async ()=>{
+        accentColor = btn.dataset.color;
+        applyTheme();
+        await saveSettings();
+        renderSettings();
+      });
+    });
+    if(settingsWired) return;
+    settingsWired = true;
+    $('setTheme').addEventListener('change', async e=>{
+      themePref = e.target.value; applyTheme(); await saveSettings();
+    });
+    $('setWeekStart').addEventListener('change', async e=>{
+      weekStart = e.target.value; updateWeekdayLabels(); renderCalendar(); await saveSettings();
+    });
+    $('setConfirmCheck').addEventListener('change', async e=>{
+      confirmOnCheck = e.target.checked; await saveSettings();
+    });
+    $('setVibrate').addEventListener('change', async e=>{
+      vibrateOnCheck = e.target.checked; await saveSettings();
+    });
+    $('setTabBadge').addEventListener('change', async e=>{
+      showTabBadge = e.target.checked; await saveSettings(); renderTabBadge();
+    });
+    $('resetDataBtn').addEventListener('click', ()=>{
+      confirmAction('Inicializar datos', 'Esto borra todos tus hábitos, marcas y ajustes de este dispositivo. No se puede deshacer.', async ()=>{
+        try{
+          for(const h of habits){ localStorage.removeItem(LS_PREFIX+'checks:'+h.id); }
+          localStorage.removeItem(LS_PREFIX+'habits');
+          localStorage.removeItem(LS_PREFIX+'settings');
+        }catch(e){}
+        location.reload();
+      });
+    });
+  }
+
+  function renderTabBadge(){
+    const btn = document.querySelector('.tab-btn[data-view="today"] .ico');
+    if(!btn) return;
+    const existing = btn.querySelector('.tab-badge');
+    if(existing) existing.remove();
+    if(!showTabBadge) return;
+    const active = habits.filter(h=>!h.archived);
+    const pending = active.filter(h=>{
+      const entry = checksCache[h.id] && checksCache[h.id][todayStr];
+      return !(entry && entry.count > 0);
+    }).length;
+    if(pending > 0){
+      const badge = document.createElement('span');
+      badge.className = 'tab-badge';
+      badge.textContent = pending;
+      btn.appendChild(badge);
+    }
   }
 
   // ---------- theme ----------
   function applyTheme(){
+    if(themePref === 'auto'){
+      darkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+    } else {
+      darkMode = themePref === 'dark';
+    }
     document.body.setAttribute('data-theme', darkMode ? 'dark':'light');
     $('themeBtn').textContent = darkMode ? '☀️' : '🌙';
+    document.documentElement.style.setProperty('--accent', accentColor);
+    document.documentElement.style.setProperty('--accent-ink', accentColor);
+    try{
+      document.documentElement.style.setProperty('--accent-soft', `color-mix(in srgb, ${accentColor} 14%, ${darkMode?'#1B1D25':'#FFFFFF'})`);
+    }catch(e){}
   }
 
   function renderGreeting(){
@@ -625,7 +807,9 @@
     $('greetLine').textContent = `${saludo} · ${fecha}`;
   }
   $('themeBtn').addEventListener('click', async ()=>{
-    darkMode = !darkMode; applyTheme(); await saveSettings();
+    themePref = darkMode ? 'light' : 'dark';
+    applyTheme(); await saveSettings();
+    if($('setTheme')) $('setTheme').value = themePref;
   });
 
   // ---------- tab bar ----------
@@ -638,6 +822,7 @@
       if(btn.dataset.view === 'reports') renderReports();
       if(btn.dataset.view === 'manage') renderManage();
       if(btn.dataset.view === 'today') renderToday();
+      if(btn.dataset.view === 'settings') renderSettings();
     });
   });
 
@@ -672,19 +857,29 @@
     list.querySelectorAll('.checklist-item').forEach(el=>{
       el.addEventListener('click', async ()=>{
         const h = habits.find(x=>x.id===el.dataset.habit);
-        if(!checksCache[h.id]) checksCache[h.id] = {};
-        const entry = checksCache[h.id][todayStr];
-        const isDone = entry && entry.count > 0;
-        if(isDone){ delete checksCache[h.id][todayStr]; }
-        else {
-          checksCache[h.id][todayStr] = {count:1, note:(entry&&entry.note)||''}; vibrate(12);
-          const streaks = computeStreaks(checksCache[h.id]);
-          celebrateMilestoneIfReached(h, streaks.current);
+        const doToggle = async ()=>{
+          if(!checksCache[h.id]) checksCache[h.id] = {};
+          const entry = checksCache[h.id][todayStr];
+          const isDone = entry && entry.count > 0;
+          if(isDone){ delete checksCache[h.id][todayStr]; }
+          else {
+            checksCache[h.id][todayStr] = {count:1, note:(entry&&entry.note)||''}; vibrate(12);
+            const streaks = computeStreaks(checksCache[h.id]);
+            celebrateMilestoneIfReached(h, streaks.current);
+          }
+          await saveChecksFor(h.id);
+          renderToday();
+          if(h.id===selectedHabitId){ renderCalendar(); renderHistory(); }
+          renderReminder();
+          renderTabBadge();
+        };
+        if(confirmOnCheck){
+          const entry = checksCache[h.id] && checksCache[h.id][todayStr];
+          const isDone = entry && entry.count > 0;
+          confirmAction(isDone ? 'Desmarcar hábito' : 'Marcar hábito', `¿Confirmas ${isDone?'desmarcar':'marcar'} "${h.name}" de hoy?`, doToggle);
+        } else {
+          await doToggle();
         }
-        await saveChecksFor(h.id);
-        renderToday();
-        if(h.id===selectedHabitId){ renderCalendar(); renderHistory(); }
-        renderReminder();
       });
     });
   }
@@ -743,7 +938,8 @@
     $('monthLabel').textContent = `${MONTH_NAMES[viewMonth.getMonth()]} ${viewMonth.getFullYear()}`;
     const grid = $('dayGrid'); grid.innerHTML = '';
     const y = viewMonth.getFullYear(), m = viewMonth.getMonth();
-    const firstDay = (new Date(y,m,1).getDay() + 6) % 7; // Monday-first offset
+    const firstDayRaw = new Date(y,m,1).getDay();
+    const firstDay = weekStart === 'monday' ? (firstDayRaw + 6) % 7 : firstDayRaw; // offset según inicio de semana
     const daysInMonth = new Date(y,m+1,0).getDate();
     const checks = checksCache[habit.id] || {};
 
@@ -1435,9 +1631,11 @@
   (async function init(){
     renderGreeting();
     await loadAll();
+    updateWeekdayLabels();
     renderPills();
     renderCalendar();
     renderHistory();
+    renderTabBadge();
   })();
 })();
 </script>
